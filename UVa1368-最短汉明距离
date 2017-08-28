@@ -1,0 +1,35 @@
+/*  给出一组DNA序列，求一个DNA序列，使得它与每个序列的汉明距离相加的总和最小，并求出该总和*/
+var matrix = [
+        ['T','A','T','G','A','T','A','C'],
+        ['A','A','A','G','C','T','A','C'],
+        ['A','A','A','G','A','T','C','C'],
+        ['T','G','A','G','A','T','A','C'],
+    ]
+    function minHammingDistance(matrix){
+        var dnaSeqNums = matrix.length,
+            dnaLength = matrix[0].length,
+            minDNASquence = '',
+            i,j,k,max,str='',
+            obj = {},hammingDistance = 0;
+
+        for(i=0;i<dnaLength;i++){
+            //降序排列,'T','A','C'
+            obj = {'T':0,'G':0,'C':0,'A':0};
+            for(j=0;j<dnaSeqNums;j++){
+                obj[matrix[j][i]]++;
+            }
+            max = 0;
+            str='';
+            for(k in obj){
+                if(obj[k]>=max){
+                    str=k;
+                    max = obj[k];
+                }
+            }
+            minDNASquence+=str;
+            hammingDistance += dnaSeqNums - max;
+        }
+
+
+        return minDNASquence+" "+hammingDistance;
+    }
