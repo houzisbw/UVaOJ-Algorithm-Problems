@@ -1,0 +1,83 @@
+var matrix = [
+        ['T','R','G','S','J'],
+        ['X','D','O','K','I'],
+        ['M',' ','V','L','N'],
+        ['W','P','A','B','E'],
+        ['U','Q','H','C','F']
+    ]
+    function puzzle(matrix,sequence){
+        var len = matrix.length,
+            coordX = 0,
+            coordY = 0,
+            i,j,isInvalid = false,temp;
+        for(i=0;i<len;i++){
+            for(j=0;j<len;j++){
+                if(matrix[i][j] === ' '){
+                    coordX = i;
+                    coordY = j;
+                    break;
+                }
+            }
+        }
+
+        for(i=0,length = sequence.length;i<length && !isInvalid;i++){
+            switch(sequence[i]){
+                case 'A':
+                    if(coordX - 1 < 0){
+                        isInvalid = true;
+                    }
+                    else{
+                        temp = matrix[coordX-1][coordY];
+                        matrix[coordX][coordY] = temp;
+                        matrix[coordX-1][coordY] = ' ';
+                        coordX--;
+                    }
+                    break;
+                case 'B':
+                    if(coordX + 1 > len){
+                        isInvalid = true;
+                    }
+                    else{
+                        temp = matrix[coordX+1][coordY];
+                        matrix[coordX][coordY] = temp;
+                        matrix[coordX+1][coordY] = ' ';
+                        coordX++;
+                    }
+                    break;
+                case 'L':
+                    if(coordY - 1 < 0){
+                        isInvalid = true;
+                    }
+                    else{
+                        temp = matrix[coordX][coordY - 1];
+                        matrix[coordX][coordY] = temp;
+                        matrix[coordX][coordY - 1] = ' ';
+                        coordY--;
+                    }
+                    break;
+                case 'R':
+                    if(coordY + 1 > len){
+                        isInvalid = true;
+                    }
+                    else{
+                        temp = matrix[coordX][coordY + 1];
+                        matrix[coordX][coordY] = temp;
+                        matrix[coordX][coordY + 1] = ' ';
+                        coordY++;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
+        if(isInvalid){
+            console.log('This puzzle has no final configuration!')
+        }
+        else {
+            for (i = 0; i < len; i++) {
+                console.log(matrix[i].toString());
+            }
+        }
+    }
