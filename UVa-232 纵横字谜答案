@@ -1,0 +1,55 @@
+var matrix = [
+        ['A','*','B'],
+        ['T','E','A'],
+        ['*','R','N'],
+        ['O','*','E'],
+    ];
+    function outputAllWords(matrix){
+        //首先找到起始格子：格子的左边或者上边是*或者出了边界
+        var startGrids = [],i,j,
+            rows = matrix.length,
+            cols = matrix[0].length,
+            isValid = true;
+        for(i=0;i<rows;i++){
+            for(j=0;j<cols;j++){
+                if(matrix[i][j]!=='*'){
+                    if(i>0&&j>0){
+                        if(!(matrix[i-1][j]!=='*' && matrix[i][j-1]!=='*')){
+                            startGrids.push([i,j]);
+                        }
+                    }
+                    //最左和最上一排都是起始格子
+                    else {
+                        startGrids.push([i,j]);
+                    }
+
+                }
+            }
+        }
+
+        //输出横向单词
+        console.log("横向单词:");
+        for(i=0;i<startGrids.length;i++){
+            var iStart = startGrids[i][0],
+                jStart = startGrids[i][1];
+            var word = matrix[iStart][jStart];
+            while(jStart+1<cols && matrix[iStart][jStart+1]!=='*'){
+                word+=matrix[iStart][jStart+1];
+                jStart++;
+            }
+            console.log(word);
+        }
+        //输出竖向单词
+        console.log("竖向单词:");
+        for(i=0;i<startGrids.length;i++){
+            var iStart = startGrids[i][0],
+                jStart = startGrids[i][1];
+            var word = matrix[iStart][jStart];
+            while(iStart+1<rows && matrix[iStart+1][jStart]!=='*'){
+                word+=matrix[iStart+1][jStart];
+                iStart++;
+            }
+            console.log(word);
+
+        }
+    }
