@@ -1,0 +1,14 @@
+function isSubString(src,sub){
+       var srcLen = src.length,
+           subLen = sub.length,i,j;
+       for( i=0,j=0;i<srcLen && j<subLen;){
+           if(src[i]===sub[j]){
+               i++;
+               j++;
+           }
+           else{
+               i++;
+           }
+       }
+       return j===subLen
+    }
