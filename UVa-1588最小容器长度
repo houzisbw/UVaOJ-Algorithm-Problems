@@ -1,0 +1,31 @@
+var s2 = [2];
+var s1 = [2,1]
+function getMinContainerLength(s1,s2){
+        //使得s1长度小于s2
+        if(s1.length>s2.length){
+            var temp = s1.slice(0);
+            s1=s2.slice(0);
+            s2=temp.slice(0);
+        }
+        var minLength = s2.length,i;
+        var isOK = false;
+        while(true) {
+            if(s1.length>s2.length){
+                s2.push(0);
+            }
+            isOK = true;
+            for (i = 0;i<s1.length;i++) {
+                if (s1[i] + s2[i] > 3) {
+                    s1.unshift(0);
+                    isOK=false;
+                    if(s1.length>s2.length){
+                        minLength++;
+                    }
+                    break;
+                }
+            }
+            if(isOK){
+                return minLength;
+            }
+        }
+    }
