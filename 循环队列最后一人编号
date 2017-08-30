@@ -1,0 +1,36 @@
+//一队人排成圆圈从1到10，从某个位置pos开始向右走，每次走step步数，停下来的时候该位置出队列(位置的值变为0)，求出最后一个人的编号
+//数组从下标1开始编号是为了方便
+//蛋疼的3重while循环
+var circle = [0,1,2,3,4,5,6,7,8,9,10]
+function lastOneLeft(circle,pos,step){
+        //剩余10人
+        var leftNum = 10;
+        var p = pos;
+        var leftPerson = 0;
+        //每次出队一个人，所以要这么多次
+        while(leftNum){
+            //开始向右走step步数
+            var tempStep = step;
+            while(tempStep--){
+                //获取下一个位置
+                var startPos = p+1;
+                if(startPos > 10){
+                    startPos = 1;
+                }
+                //每走一步必须跳过为0的空位
+                while(circle[startPos]===0){
+                    startPos++;
+                    if(startPos > 10){
+                        startPos = 1;
+                    }
+                }
+                p=startPos;
+            }
+            //出队列
+            console.log(circle[p]);
+            leftPerson = circle[p];
+            circle[p]=0;
+            leftNum--;
+        }
+        return leftPerson;
+    }
