@@ -223,3 +223,7 @@ function caculateRedChessKillingPoints(chessType,chessPosX,chessPosY){
             break;
     }
 }
+
+
+//代码测试
+console.log(isBlackDie())
