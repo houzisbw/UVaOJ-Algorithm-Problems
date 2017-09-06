@@ -1,0 +1,78 @@
+//判断有多少个正方形
+//正方形边长有4个点
+var cubeLength = 4;
+//输入数据
+var edgeData = {
+    'H11':1,
+    'H21':1,
+    'V12':1,
+    'V11':1,
+
+    'H22':1,
+    'V22':1,
+    'H32':1,
+    'V23':1,
+
+    'H13':1,
+    'V14':1,
+    'H23':1,
+    'V24':1,
+
+    'V34':1,
+    'H42':1,
+    'H43':1,
+    'V32':1
+
+    };
+
+//最终结果，下标为几就是边长为几的正方形个数
+var resultArray = [0];
+//正方形种类
+for(var n=1;n<=cubeLength;n++){
+   var cnt = 0;
+   //依次遍历边长为n的正方形 ,(i,j)为左上角的点
+   for(var i=1;i<=cubeLength-n;i++){
+       for(var j=1;j<=cubeLength-n;j++){
+            var row=i,col=j;
+            //该list存放这个正方形所有边,每个边长度为1
+            var edgeList = [];
+            //横向上边
+            for(var k=j;k<j+n;k++){
+                var tempEdge = 'H'+row+k;
+                edgeList.push(tempEdge);
+            }
+            //横向下边
+            for(var k2=j;k2<j+n;k2++){
+                var tempEdge = 'H'+(row+n)+k2;
+                edgeList.push(tempEdge);
+            }
+            //纵向左边
+           for(var k3=i;k3<i+n;k3++){
+               var tempEdge = 'V'+k3+col;
+               edgeList.push(tempEdge);
+           }
+           //纵向右边
+           for(var k4=i;k4<i+n;k4++){
+               var tempEdge = 'V'+k4+(col+n);
+               edgeList.push(tempEdge);
+           }
+
+           //判断是否是一个正方形
+           var is = true;
+           for(var l=0;l<edgeList.length;l++){
+               //如果不存在该边则不是正方形
+               if(!edgeData[edgeList[l]]){
+                   is = false;
+                   break;
+               }
+           }
+           //如果是正方形
+           if(is){
+               cnt++;
+           }
+       }
+   }
+   resultArray.push(cnt);
+}
+//输出结果
+console.log(resultArray.join(' '))
