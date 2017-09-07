@@ -1,0 +1,26 @@
+//仅仅实现了单个字符的分割,spliiter为单个字符
+function mySplit(str,splitter){
+    if(typeof str !== 'string' || typeof splitter !== 'string')return [];
+    if(splitter.length > 1)return [];
+    var retArray = [],
+        end=0,
+        start=0,
+        len = str.length;
+    while(end<len){
+        //end<len必须，防止越界访问
+        while(str[end]===splitter && end<len){
+          start++;
+          end++;
+        }
+        while(str[end]!==splitter && end<len){
+          end++;
+        }
+        var t = '';
+        for(var k=start;k<end;k++){
+          t+=str[k];
+        }
+        retArray.push(t);
+        start=end;
+    }
+    return retArray;
+}
