@@ -1,0 +1,64 @@
+//spliiter为单个字符或者多个字符
+function mySplit(str,splitter){
+    var retArray= [];
+    var splitterLen = splitter.length;
+    var strLen = str.length;
+    if(splitterLen >= strLen){
+      return [str];
+    }
+    var start=0,end;
+    var startArray = [];
+    //作用是找到分隔符起点index
+    for(var i=0;i<=strLen-splitterLen;i++){
+      var tempStr = '';
+      for(var j=i;j<i+splitterLen;j++){
+        tempStr+=str[j];
+      }
+      //找到一个分隔符
+      if(tempStr === splitter){
+        start = i;
+        startArray.push(start);
+        //重置i
+        i = i+splitterLen;
+      }
+
+    }
+    //如果没找到分隔单词则反回原字符串
+    if(startArray.length === 0){
+      return [str]
+    }
+
+    //根据分隔符起点index计算分割后的字符串
+    for(var i=0;i<startArray.length-1;i++){
+      var tempStr = ''
+      //特殊处理，防止遗漏开始的字符串
+      if(i===0){
+        for(var j=0;j<startArray[i];j++){
+          tempStr+=str[j];
+        }
+        //如果长度大于0才能加入
+        if(tempStr.length>0){
+          retArray.push(tempStr);
+        }
+      }
+      tempStr = '';
+      for(var j=startArray[i]+splitterLen;j<startArray[i+1];j++){
+        tempStr+=str[j];
+      }
+      if(tempStr.length>0){
+        retArray.push(tempStr)
+      }
+    }
+
+    //特殊处理，防止遗漏结束的字符串
+    var t = ''
+    for(var i=startArray[startArray.length-1]+splitterLen;i<str.length;i++){
+      t+=str[i]
+    }
+    if(t.length>0){
+      retArray.push(t)
+    }
+    return retArray;
+	
+}
+
