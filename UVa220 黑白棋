@@ -1,0 +1,142 @@
+//黑白棋,棋盘未下用.表示，黑用o表示，白用x表示
+ var board = [],
+     boardLength = 9,
+     //合法操作数组
+     legalResult =[];
+ //初始化棋盘
+ for(var i=0;i<boardLength;i++){
+     board[i] = [];
+     for(var j=0;j<boardLength;j++){
+         board[i][j] = '.';
+     }
+ }
+ //棋盘数据
+ var data = [
+     [5,3,'x'],
+     [6,3,'o'],
+     [3,4,'o'],
+     [4,4,'o'],
+     [5,4,'o'],
+     [6,4,'o'],
+     [4,5,'o'],
+     [5,5,'x'],
+     [6,5,'o'],
+     [4,6,'o'],
+     [5,6,'x'],
+     [6,6,'x'],
+     [3,7,'x']
+ ]
+ //初始化棋盘数据
+ for(var i=0;i<data.length;i++){
+     board[data[i][0]][data[i][1]] = data[i][2];
+ }
+
+ //该点是否在棋盘内
+ function isInBorad(row,col){
+     return row>=1 && row <=8 && col>=1 &&col<=8;
+ }
+ //该点是否可走,side为走棋方,opSide为对手
+ function isLegalPoint(row,col,side,opSide){
+      //方向数组：右 右下 下 左下 左 左上 上 右上
+      var dir = [[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]];
+      //8个点是夹住情况的个数
+      var cnt = 0;
+      //遍历该点周围的8个点
+      for(var i=0;i<dir.length;i++){
+          //每次前进的增量
+          var dirRow = dir[i][0],
+              dirCol = dir[i][1];
+          var curRow = row+dirRow,
+              curCol = col+dirCol;
+          //如果该点在棋盘内 且 是对方棋子
+          if(isInBorad(curRow,curCol) && board[curRow][curCol] === opSide){
+              while(isInBorad(curRow,curCol) && board[curRow][curCol] === opSide){
+                  curRow+=dirRow;
+                  curCol+=dirCol;
+              }
+              //此处是找到了己方棋子,则是一个夹住情况
+              if(isInBorad(curRow,curCol) && board[curRow][curCol] === side){
+                  cnt++;
+              }
+          }
+      }
+      //大于0则合法
+      return cnt>0;
+
+ }
+ //计算合法操作，参数是走棋方
+ function printLegalOperation(side){
+      //对手
+      var opSide;
+      if(side === 'x'){
+          opSide = 'o';
+      }
+      else{
+          opSide = 'x';
+      }
+     //从上到下，从左到右遍历棋盘每一个格子，判断是否能走棋
+     for(var i=1;i<boardLength;i++){
+          for(var j=1;j<boardLength;j++){
+              //该点是空位才能计算
+              if(board[j][i]==='.') {
+                  if(isLegalPoint(j, i, side, opSide)){
+                      legalResult.push([j,i]);
+                  }
+              }
+          }
+     }
+
+ }
+ //打印棋盘
+ function printBoard(){
+     for(var i=1;i<boardLength;i++){
+         board[i].splice(0,1);
+         console.log('row:'+i+" "+board[i].join(' '));
+     }
+ }
+ //下棋
+ function playChess(row,col,side,opSide){
+     if(isLegalPoint(row,col,side,opSide)){
+         //该点下棋
+         board[row][col]=side;
+         //方向数组：右 右下 下 左下 左 左上 上 右上
+         var dir = [[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]];
+         //遍历该点周围的8个点
+         for(var i=0;i<dir.length;i++){
+             //每次前进的增量
+             var dirRow = dir[i][0],
+                 dirCol = dir[i][1];
+             var curRow = row+dirRow,
+                 curCol = col+dirCol;
+             //如果该点在棋盘内 且 是对方棋子
+             if(isInBorad(curRow,curCol) && board[curRow][curCol] === opSide){
+                 while(isInBorad(curRow,curCol) && board[curRow][curCol] === opSide){
+                     curRow+=dirRow;
+                     curCol+=dirCol;
+                 }
+                 //此处是找到了己方棋子,则是一个夹住情况
+                 if(isInBorad(curRow,curCol) && board[curRow][curCol] === side){
+                     //替换棋子
+                     curRow = row+dirRow;
+                     curCol = col+dirCol;
+                     while(isInBorad(curRow,curCol) && board[curRow][curCol] === opSide){
+                         board[curRow][curCol]=side;
+                         curRow+=dirRow;
+                         curCol+=dirCol;
+                     }
+                 }
+             }
+         }
+     }
+     else{
+          alert('not legal position!');
+          return;
+     }
+ }
+
+ //计算合法位置
+ printLegalOperation('x')
+ //下棋
+ playChess(7,3,'x','o')
+ //打印棋盘
+ printBoard();
