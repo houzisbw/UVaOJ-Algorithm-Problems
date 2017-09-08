@@ -1,0 +1,44 @@
+//取出2个序列的对应面数组，排序后判断2个数组是否相同
+var cube1 = 'rbgggr';
+var cube2 = 'rggbgr';
+var oppositeFaceList1 = [],
+    oppositeFaceList2 = [];
+//取得对应面序列    
+for(var i=0;i<cube1.length/2;i++){
+    oppositeFaceList1.push([cube1.charCodeAt(i),cube1.charCodeAt(cube1.length-i-1)]);
+    oppositeFaceList2.push([cube2.charCodeAt(i),cube2.charCodeAt(cube2.length-i-1)]);
+}
+//排序函数
+function sortFunc(item1,item2){
+    if(item1[0] === item2[0]){
+        return item1[1]-item2[1];
+    }
+    return item1[0] - item2[0];
+}
+
+//对应面内部排序
+for(var i=0;i<oppositeFaceList1.length;i++){
+   if(oppositeFaceList1[i][0]>oppositeFaceList1[i][1]){
+       var temp = oppositeFaceList1[i][0];
+       oppositeFaceList1[i][0] = oppositeFaceList1[i][1];
+       oppositeFaceList1[i][1] = temp;
+   }
+    if(oppositeFaceList2[i][0]>oppositeFaceList2[i][1]){
+        var temp = oppositeFaceList2[i][0];
+        oppositeFaceList2[i][0] = oppositeFaceList2[i][1];
+        oppositeFaceList2[i][1] = temp;
+    }
+}
+
+//对应面排序
+oppositeFaceList1.sort(sortFunc);
+oppositeFaceList2.sort(sortFunc);
+
+//判断是否相等
+var isEqual = true;
+for(var i=0;i<oppositeFaceList1.length;i++){
+    if(oppositeFaceList1[i].toString()!==oppositeFaceList2[i].toString()){
+        isEqual = false;
+    }
+}
+alert(isEqual);
