@@ -1,0 +1,61 @@
+//此题有时间复杂度更低的算法：先排序格子，从低到高，然后开始填充
+//输入
+var landRow = 3,
+   landCol = 3;
+var landHeightArray = [
+   [25,37,45],
+   [51,-120,34],
+   [94,83,27]
+];
+//海水总量立方米
+var totalWaterVolume = 10000;
+
+
+//计算
+//要输出的海拔高度
+var outputSeaLevel;
+//找到最低点
+var lowestHeight = 10000;
+for(var i=0;i<landRow;i++){
+   for(var j=0;j<landCol;j++){
+       if(landHeightArray[i][j] < lowestHeight){
+           lowestHeight = landHeightArray[i][j];
+       }
+   }
+}
+outputSeaLevel = lowestHeight;
+//从最低点每次向上移动10米，填充海水，一次填充100m3*当前区域个数，计算剩余海水直到海水总量小于0
+while(totalWaterVolume > 0){
+   //遍历地图寻找是否有区域海拔等于当前海拔
+   //当前海拔高度的区域的个数
+   var currentCnt = 0;
+   //存储当前最低区域的坐标数组
+   var lowestRegionArray = [];
+   //找到最低海拔格子数量和坐标
+   for(var i=0;i<landRow;i++){
+       for(var j=0;j<landCol;j++){
+           if(landHeightArray[i][j]===lowestHeight){
+               currentCnt++;
+               lowestRegionArray.push([i,j]);
+           }
+       }
+   }
+   //填充水量
+   //如果当前水量大于要填充的区域的水量
+   if(totalWaterVolume >= 100*currentCnt){
+       totalWaterVolume -= 100*currentCnt;
+       outputSeaLevel+=1;
+       lowestHeight+=1;
+       for(var i=0;i<lowestRegionArray.length;i++){
+           landHeightArray[lowestRegionArray[i][0]][lowestRegionArray[i][1]]+=1;
+       }
+   }
+   //水量不足以填充当前区域
+   else{
+       var tempHeight = (totalWaterVolume / (10*10*currentCnt)).toFixed(2);
+       outputSeaLevel+=Number(tempHeight);
+       totalWaterVolume = 0;
+   }
+}
+//输出
+alert(outputSeaLevel);
