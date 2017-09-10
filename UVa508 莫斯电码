@@ -1,0 +1,105 @@
+var morseCode = {
+'A':'.-',
+'B':'-...',
+'C':'-.-.',
+'D':'-..',
+'E':'.',
+'F':'..-.',
+'G':'--.',
+'H':'....',
+'I':'..',
+'J':'.---',
+'K':'-.-',
+'L':'.-..',
+'M':'--',
+'N':'-.',
+'O':'---',
+'P':'.--.',
+'Q':'--.-',
+'R':'.-.',
+'S':'...',
+'T':'-',
+'U':'..-',
+'V':'...-',
+'W':'.--',
+'X':'-..-',
+'Y':'-.--',
+'Z':'--..'
+};
+var dict = [
+'AN','EARTHQUAKE','EAT','GOD','HATH','IM','READY','TO','WHAT','WROTH'
+]
+var input = [
+'.--.....--','.....--....','--.----..','.--.-.----..','.--.....--','.--.',
+'..-.-.-....--.-..-.--.-.','..--','.-...--..-.--','----','..--'
+]
+
+
+//将输入的dict转化为morse电码
+var dictMorseList = [];
+for(var i=0;i<dict.length;i++){
+var word = dict[i];
+var tempMorse = '';
+for(var j=0;j<word.length;j++){
+    tempMorse+=morseCode[word[j]];
+}
+dictMorseList.push(tempMorse);
+}
+//输出的数组
+var output = [];
+//遍历input数组
+for(var i=0;i<input.length;i++){
+    var t = input[i];
+    var max = 100000;
+    //遍历dictMorseList查找是否存在精确匹配
+    var cnt=0,firstMatchIndex = -1,index,noPerfectMatchedWordIndex=-1;
+    for(var j=0;j<dictMorseList.length;j++){
+        if(dictMorseList[j] === t){
+            cnt++;
+            if(cnt===1){
+                firstMatchIndex = j;
+            }
+            index = j;
+        }
+        //如果不相等，计算input[i]是否是子串
+        else{
+            var length1 = t.length,
+                length2 = dictMorseList[j].length;
+            if(length1 >= length2){
+                if(t.substr(0,length2) === dictMorseList[j]){
+                    if(length1-length2 <= max){
+                        noPerfectMatchedWordIndex = j;
+                        max = length1-length2;
+                    }
+                }
+            }
+            else{
+                if(t === dictMorseList[j].substr(0,length1)){
+                    if(length2-length1 <= max){
+                        noPerfectMatchedWordIndex = j;
+                        max = length2-length1;
+                    }
+                }
+            }
+        }
+    }
+    //如果只匹配到一个则输出自己
+    if(cnt === 1){
+        output.push(dict[index]);
+    }
+    //匹配到多个，输出第一个
+    else if(cnt>1){
+        output.push(dict[firstMatchIndex]+'!');
+    }
+    //未能匹配到
+    else{
+        if(noPerfectMatchedWordIndex!==-1){
+            output.push(dict[noPerfectMatchedWordIndex]+'?');
+        }
+    }
+}
+
+//输出答案
+for(var i=0;i<output.length;i++){
+console.log(output[i])
+}
