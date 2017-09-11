@@ -1,0 +1,100 @@
+//本题目是模拟题，注意没有解的情况：回到初始状态
+
+
+//检查该时刻是否都清醒
+ function checkIsWeak(arr){
+     for(var i=0;i<studentsNum;i++){
+         if(arr[i][0]===0){
+             return false;
+         }
+     }
+     return true;
+ }
+
+ //学生总人数
+ var studentsNum = 3;
+ //学生数据
+ var studentsData  = [
+     [2,4,1],
+     [1,5,2],
+     [1,4,3]
+ ];
+ //学生状态表格
+ var studentsStateArray = [];
+ //初始化学生状态表格：0睡觉 1清醒
+ //另外还要记录一个每个学生在当前时刻处于周期的哪一步,一个数字，范围是1->清醒+睡眠
+ //每个格子2个数，第一个是清醒或者睡眠，第二个是哪一步
+ var tempState = [];
+ for(var i=0;i<studentsNum;i++){
+    //睡觉
+    if(studentsData[i][2]>studentsData[i][0]){
+        tempState.push([0,studentsData[i][2]]);
+    }
+    else{
+        tempState.push([1,studentsData[i][2]]);
+    }
+ }
+ //每个元素从左到右为studentsData里学生的数据，按顺序
+ studentsStateArray.push(tempState);
+ //多长时间清醒
+ var weakTime = 0;
+ while(true){
+    if(checkIsWeak(studentsStateArray[weakTime])){
+        break;
+    }
+     //下一个时刻的学生数据
+     var nextTimeStudentsData = [];
+     //计算下一周期的数据
+     //根据上一周期的哪一步数据计算下个时刻是
+     //遍历每个学生
+     for(var i=0;i<studentsNum;i++){
+        //每个学生的数据:状态，步数
+        var state = studentsStateArray[weakTime][i][0];
+        var step = studentsStateArray[weakTime][i][1];
+        //获取该学生的睡眠周期和清醒周期
+        var studentWeakLength = studentsData[i][0];
+        var studentSleepLength = studentsData[i][1];
+        //判断步数的下一步
+        //如果当前步数是清醒周期的最后一步
+        if(step === studentWeakLength){
+            //判断是否要睡觉
+            var sleepCnt = 0;
+            for(var k=0;k<studentsNum;k++){
+                //睡觉
+                if(studentsStateArray[weakTime][k][0]===0){
+                    sleepCnt++;
+                }
+            }
+            //清醒人数小于睡觉人数,则入睡
+            if(studentsNum-sleepCnt<sleepCnt){
+                //更新步数
+                //更新状态
+                nextTimeStudentsData.push([0,step+1]);
+
+            }else{
+                //继续听课
+                nextTimeStudentsData.push([1,1]);
+            }
+        }
+        //如果当前步数是睡觉周期最后一步,则下一步是清醒
+        else if(step === studentWeakLength + studentSleepLength){
+            nextTimeStudentsData.push([1,1]);
+        }
+        //如果处于睡眠周期
+
+        else if(step<(studentWeakLength + studentSleepLength) && step>studentWeakLength){
+            //继续睡觉
+            nextTimeStudentsData.push([0,step+1]);
+        }
+        //处于清醒周期,且不是最后一格
+        else{
+            nextTimeStudentsData.push([1,step+1]);
+        }
+
+     }
+     //更新下一个周期
+     studentsStateArray.push(nextTimeStudentsData);
+     weakTime++;
+
+ }
+ alert(weakTime+1)
