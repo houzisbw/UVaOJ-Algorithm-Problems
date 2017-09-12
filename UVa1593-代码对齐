@@ -1,0 +1,85 @@
+//js没有c++的输入方法，各种方法都要手写，麻烦
+//首先得把输入的字符串分割为单词数组
+
+//提取出字符串里的单词，返回单词数组
+function getWords(str){
+    var ret = [];
+    var i=0,j=0;
+    while(j<str.length){
+        if(str[i]===' '){
+            i++;
+            j++;
+            continue;
+        }
+        var tempWord = '';
+        while(j<str.length && str[j]!==' '){
+            tempWord+=str[j];
+            j++;
+        }
+        i=j;
+        ret.push(tempWord)
+    }
+    return ret;
+}
+
+////////////////////////////////////主要代码,用二维数组存放单词，目的是要竖向遍历每一列单词
+//代码对齐
+var input = [
+    '   start:   integer;       //  begin here',
+    ' stop: integer;  //  ends here ',
+    '   s: string;',
+    'c: char // temp'
+];
+
+//存储单词的二维数组
+var inputWordArray = [];
+for(var i=0;i<1000;i++){
+    inputWordArray[i] = [];
+    for(var j=0;j<180;j++){
+        inputWordArray[i][j] = 0;
+    }
+}
+var inputNumber = input.length;
+var output = []
+for(var i=0;i<inputNumber;i++){
+    output[i]='';
+}
+var maxLength = 0;
+for(var i=0;i<inputNumber;i++){
+    var wordList = getWords(input[i]);
+    if(maxLength<wordList.length){
+        maxLength = wordList.length;
+    }
+    for(var j=0;j<wordList.length;j++){
+        inputWordArray[i][j]=wordList[j];
+    }
+}
+//遍历每一列
+for(var i=0;i<maxLength;i++){
+    //找出每一列的最大字符长度
+    var maxStrLength = 0,j=0;
+    while(j<1000 && inputWordArray[j][i]!==0){
+        if(inputWordArray[j][i].length>maxStrLength){
+            maxStrLength = inputWordArray[j][i].length;
+        }
+        j++;
+    }
+    //给该列每一行不足最大长度的字符补齐长度
+    var k=0;
+    while(k<1000){
+        //如果有单词存在
+        if(inputWordArray[k][i]!==0) {
+            var leftBlank = maxStrLength - inputWordArray[k][i].length;
+            var tempStr = inputWordArray[k][i];
+            for (var s = 0; s <= leftBlank; s++) {
+                tempStr += ' ';
+            }
+            output[k] += tempStr;
+        }
+        k++;
+    }
+}
+
+for(var i=0;i<inputNumber;i++){
+    console.log(output[i])
+}
