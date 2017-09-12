@@ -1,0 +1,40 @@
+//丑数，求第1500个
+var uglyNumberSet = new Set();
+var uglyNumberArray = [];
+var uglyNumberFactorArray = [2,3,5]
+uglyNumberArray.push(1);
+
+var cnt = 1;
+var result;
+while(1){
+    var tempNumber = findMin(uglyNumberArray)[0];
+    var tempIndex = findMin(uglyNumberArray)[1];
+    if(cnt===1500){
+        result = tempNumber;
+        break;
+    }
+    //移除找到的数
+    uglyNumberArray.splice(tempIndex,1);
+    //新加入丑数
+    for(var i=0;i<3;i++){
+        if(!uglyNumberSet.has(uglyNumberFactorArray[i]*tempNumber)){
+            uglyNumberSet.add(uglyNumberFactorArray[i]*tempNumber);
+            uglyNumberArray.push(uglyNumberFactorArray[i]*tempNumber);
+        }
+    }
+    cnt++;
+
+}
+alert(result)
+
+function findMin(arr){
+    var min = arr[0];
+    var index = 0;
+    for(var i=0;i<arr.length;i++){
+        if(arr[i]<min){
+            min=arr[i];
+            index=i;
+        }
+    }
+    return [min,index];
+}
