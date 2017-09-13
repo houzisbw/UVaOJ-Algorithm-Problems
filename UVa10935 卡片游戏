@@ -1,0 +1,14 @@
+var n = 4;
+var queue = [];
+//初始化
+for(var i=1;i<=n;i++){
+    queue.unshift(i);
+}
+while(queue.length>1){
+    var topElement = queue.pop();
+    console.log(topElement);
+    var newTop = queue[queue.length-1];
+    queue.pop();
+    queue.unshift(newTop);
+}
+console.log('last: '+queue[0])
