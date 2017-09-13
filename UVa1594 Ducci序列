@@ -1,0 +1,34 @@
+var tupleLength = 4;
+var tuple = [1,14,3,99];
+var tempTuple = tuple.slice(0);
+var s = new Set();
+var isLoop = false;
+while(true){
+    var arr = [];
+    for(var i=0;i<tupleLength-1;i++){
+       var temp = Math.abs(tempTuple[i]-tempTuple[i+1]);
+       arr.push(temp);
+    }
+    arr.push(Math.abs(tempTuple[tupleLength-1]-tempTuple[0]));
+
+    console.log(arr.join(' '))
+
+    //判断是否是0
+    var sum=0;
+    for(var j=0;j<arr.length;j++){
+        sum+=arr[j];
+    }
+    if(sum===0){
+        break;
+    }
+    //判断是否是循环
+    if(!s.has(arr)){
+        s.add(arr);
+        tempTuple = arr.slice(0);
+    }else{
+        isLoop = true;
+        break;
+    }
+
+}
+alert(isLoop?'循环':"0")
