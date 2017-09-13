@@ -1,0 +1,18 @@
+//将 [1,[[2,3],4],[5,6]] 变成 [1,2,3,4,5,6]
+//concat方法参数可以是数组也可以是数字，递归展开，注意这里没有用到外部参数
+var arr = [1,[[2,3],4],[5,6]];
+function flatArray(arr){
+    var result = [];
+    for(let i of arr){
+        if(i instanceof Array){
+            result = result.concat(flatArray(i))
+        }else{
+            result.push(i);
+        }
+    }
+    return result;
+}
+var result = flatArray(arr);
+for(let i of result){
+    console.log(i)
+}
