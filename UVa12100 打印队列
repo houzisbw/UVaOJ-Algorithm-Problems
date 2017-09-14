@@ -1,0 +1,38 @@
+//用队列模拟即可，注意要用2个数的数组来保存位置和优先级
+var input = [1,1,9,1,1,1];
+var queue = [];
+//队首是0,队首出队是shift,队尾入队是push
+for(var i=0;i<input.length;i++){
+    var temp = [i,input[i]];
+    queue.push(temp);
+}
+//任务位置
+var taskPosition = 2;
+//耗时
+var time = 0;
+while(true){
+    var queueFront = queue[0];
+    //检测是否是最急的任务
+    var moreUrgentTask = null;
+    for(var i=0;i<queue.length;i++){
+        if(queueFront[1]<queue[i][1]){
+            //找到更加紧急的
+            moreUrgentTask = queue[i];
+            break;
+        }
+    }
+    if(moreUrgentTask!==null){
+        queue.shift();
+        queue.push(queueFront);
+    }else{
+        //打印当前任务
+        //如果是要打印的任务则break
+        if(queueFront[0]===taskPosition){
+            time++;
+            break;
+        }
+        queue.shift();
+        time++;
+    }
+}
+alert(time)
