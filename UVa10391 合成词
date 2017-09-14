@@ -1,0 +1,26 @@
+//另一种思路拆分单词好点
+var input = ['a','ab','aa','abcd','boy','cd','copy','copyright','right'];
+var set = new Set();
+var compoundSet = new Set();
+for(var i=0;i<input.length;i++){
+    set.add(input[i]);
+}
+for(var i=0;i<input.length;i++){
+    for(var j=i;j<input.length;j++){
+        if(i!==j){
+            compoundSet.add(input[i]+input[j]);
+            compoundSet.add(input[j]+input[i]);
+        }
+    }
+}
+
+var result = [];
+for(let x of compoundSet){
+    if(set.has(x)){
+        result.push(x);
+    }
+}
+
+for(var i=0;i<result.length;i++){
+    console.log(result[i]);
+}
