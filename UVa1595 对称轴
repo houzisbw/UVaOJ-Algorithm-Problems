@@ -1,0 +1,48 @@
+//思路：利用set来保存所有点，然后计算出中轴，遍历每个点，计算其对应点是否在set中即可
+var input = [[2,3],[3,3]];
+var min=input[0][0],max=input[0][0];
+var set = new Set();
+
+for(var i=0;i<input.length;i++){
+    if(input[i][0]<min){
+        min = input[i][0];
+    }
+    if(input[i][0]>max){
+        max = input[i][0];
+    }
+    //将数组转为字符串存储，因为set判断对象是===
+    set.add(input[i][0].toString()+' '+input[i][1].toString());
+}
+//直接求出中点,然后对每一个点计算另外一个点，若另外一个点在set内则是对称的
+var hasSymmetric = true;
+var centerX = (min+max)/2;
+for(let s of set){
+    //浮点数也有可能，不能用parseInt
+    var tempX = Number(s.split(' ')[0]);
+    var otherSideX,otherSidePoint;
+    if(tempX!==centerX){
+        if(tempX<centerX){
+            otherSideX = (tempX+2*(centerX-tempX)).toString();
+            otherSidePoint = otherSideX+' '+s.split(' ')[1];
+            if(!set.has(otherSidePoint)){
+                hasSymmetric=false;
+                break;
+            }
+        }else{
+            otherSideX = (tempX-2*(tempX-centerX)).toString();
+            otherSidePoint = otherSideX+' '+s.split(' ')[1];
+            if(!set.has(otherSidePoint)){
+                hasSymmetric=false;
+                break;
+            }
+        }
+    }
+}
+
+//输出
+if(hasSymmetric){
+    alert('symmetric x is '+centerX);
+}
+else{
+    alert('has no symmetric axis');
+}
