@@ -1,0 +1,30 @@
+//思路：利用map统计从a到b的学生人数，然后反向查找从b到a的，如果相等则可以
+var studentData = [
+    [1,2],
+    [2,3],
+    [3,2],
+    [3,4],
+    [3,4],
+    [4,3],
+    [4,4]
+]
+var map = new Map();
+for(var i=0;i<studentData.length;i++){
+    var str = studentData[i][0].toString()+' '+studentData[i][1].toString()
+    if(map.has(str)){
+        var num = map.get(str);
+        map.set(str,num+1);
+    }else{
+        map.set(str,1);
+    }
+}
+var canExchange = true;
+for(let [key,value] of map){
+    var temp = key;
+    var splitted = temp.split(' ');
+    var other = splitted[1]+' '+splitted[0];
+    if(map.get(other)!==value){
+        canExchange=false;
+    }
+}
+alert(canExchange)
