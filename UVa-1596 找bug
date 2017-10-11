@@ -1,0 +1,119 @@
+//知识点:map的使用,栈的使用
+
+
+//输入数据
+var input = [
+    'c[11]',
+    'd[13]',
+    'd[12]=12',
+    'c[d[12]]=5'
+];
+//出错的第一行
+var firstBugLine = 0;
+//存储数组大小的map
+var arraySizeMap = new Map();
+//存储数组每一项值的map
+var arrayValueMap = new Map();
+//辅助函数：计算每一行程序是否出现bug
+function analyseCurrentLine(str){
+    //如果是定义语句
+    if(str.indexOf('=')===-1){
+        var leftBracketPos = str.indexOf('[');
+        var rightBracketPos = str.indexOf(']');
+        //数组名
+        var arrayName = str.substr(0,leftBracketPos);
+        //数组大小
+        var arraySize = str.substr(leftBracketPos+1,rightBracketPos-leftBracketPos-1);
+        //存储到map
+        arraySizeMap.set(arrayName,arraySize);
+
+    //赋值语句
+    }else{
+        //等号右边部分
+        var middlePos = str.indexOf('=');
+        var leftPart = str.substr(0,middlePos);
+        var rightPart = str.substr(middlePos+1);
+        //处理等号右边部分
+        var rightPartResult = parseArray(rightPart);
+        if(rightPartResult==-1){
+            return -1;
+        }
+        //处理等号左边的部分,先提取出最外层数组
+        var outerArrayLeftBracketPos = leftPart.indexOf('[');
+        var outerArrayRightBracketPos = leftPart.lastIndexOf(']');
+        var outerArrayName = leftPart.substr(0,outerArrayLeftBracketPos);
+        var outArraySize = parseArray(leftPart.substr(outerArrayLeftBracketPos+1,outerArrayRightBracketPos-outerArrayLeftBracketPos-1));
+        if(outArraySize == -1){
+            return -1;
+        }
+        //判断最外层数组是否越界
+        //是否越界,如果越界返回-1
+        if(parseInt(arraySizeMap.get(outerArrayName),10)<=parseInt(outArraySize,10)){
+            return -1;
+        }
+        //判断最外层数组是否定义
+        if(arraySizeMap.get(outerArrayName)==undefined){
+            return -1;
+        }
+        //赋值存储
+        var arrayItem = outerArrayName+'['+outArraySize+']';
+        arrayValueMap.set(arrayItem,rightPartResult);
+    }
+    return 1;
+}
+//辅助函数：解析数组
+function parseArray(arrayStr){
+    var tempStr = arrayStr;
+    //栈，用来存储嵌套的数组名
+    var stack = [];
+    //最里面一层的数字
+    var innerArraySize;
+    while(true){
+        //找到第一个[的位置
+        var leftBracketPos = tempStr.indexOf('[');
+        var rightBracketPos = tempStr.lastIndexOf(']');
+        if(leftBracketPos==-1){
+            innerArraySize = tempStr;
+            break;
+        }else{
+            //存储数组名到stack中
+            var arrayName = tempStr.substr(0,leftBracketPos);
+            stack.push(arrayName);
+            //更新tempstr
+            tempStr = tempStr.substr(leftBracketPos+1,rightBracketPos-leftBracketPos-1);
+        }
+    }
+    //依次计算栈，看是否越界或者使用未初始化的变量
+    while(stack.length>0){
+        var top = stack.pop();
+        //是否越界,如果越界返回-1
+        if(parseInt(arraySizeMap.get(top),10)<=parseInt(innerArraySize,10)){
+            return -1;
+        }
+        //是否未定义,如果未定义返回-1
+        var arrayItem = top+'['+innerArraySize+']';
+        if(arrayValueMap.get(arrayItem)==undefined){
+            return -1;
+        }
+
+        innerArraySize = arrayValueMap.get(arrayItem);
+    }
+    return innerArraySize;
+
+}
+//主程序
+var hasBug = false;
+while(firstBugLine < input.length){
+    var currentLine = input[firstBugLine];
+    var currentLineResult = analyseCurrentLine(currentLine);
+    if(currentLineResult!==1){
+        hasBug = true;
+        break;
+    }
+    firstBugLine++;
+}
+if(hasBug){
+    alert('bug首次出现行:'+firstBugLine)
+}else{
+    alert('无bug')
+}
