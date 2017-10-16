@@ -1,0 +1,66 @@
+//字典更新
+var input = [
+    '{a:3,b:4,c:10,f:6}',
+    '{a:3,c:5,d:10,ee:4}'
+];
+var addList=[],
+    deleteList=[],
+    modifyList=[];
+
+var oldMap = new Map();
+var newMap = new Map();
+
+function parseInputString(str,map){
+    var innerStr = str.substr(1,str.length-2);
+    var tempList = innerStr.split(',');
+    for(var i=0;i<tempList.length;i++){
+        var kv = tempList[i].split(':');
+        map.set(kv[0],kv[1]);
+    }
+}
+
+parseInputString(input[0],oldMap);
+parseInputString(input[1],newMap);
+
+//遍历oldMap
+oldMap.forEach(function(value,key){
+    //判断该key是否存在于新map中
+    if(newMap.has(key)){
+        var v = newMap.get(key);
+        if(v != value){
+            modifyList.push(key);
+        }
+    }else{
+        deleteList.push(key);
+    }
+});
+//遍历新map
+newMap.forEach(function(value,key){
+    if(!oldMap.has(key)){
+        addList.push(key);
+    }
+});
+
+
+if(addList.length+modifyList.length+deleteList.length>0){
+    var listStr
+    if(addList.length>0){
+        addList.sort();
+        var listStr = '+'+addList.join(',')+';';
+        console.log(listStr)
+    }
+    if(modifyList.length>0){
+        modifyList.sort();
+        listStr = '*'+modifyList.join(',')+';';
+        console.log(listStr)
+    }
+    if(deleteList.length>0){
+        deleteList.sort();
+        listStr = '-'+deleteList.join(',')+';';
+        console.log(listStr)
+    }
+
+
+}else{
+    console.log('No Changes');
+}
