@@ -1,0 +1,179 @@
+//模拟题，细节比较多
+
+//输入部分
+var inputMaps = [
+    'BayArea -6.0 12.0 -11.0 5.0',
+    'SantaClara 4.0 9.0 -3.5 2.5',
+    'SanJoseRegion -3.0 10.0 11.0 3.0',
+    'CenterCoast -5.0 11.0 1.0 -8.0',
+    'SanMateo -5.5 4.0 -12.5 9.0',
+    'NCalif -13.0 -7.0 13.0 15.0'
+];
+var inputLocations = [
+    'Monterey -4.0 2.0',
+    'SanJose -1.0 7.5',
+    'Fresno 7.0 0.1',
+    'SanFrancisco -10.0 8.6',
+    'SantaCruz -4.0 2.0',
+    'SanDiego 13.8 -19.3'
+];
+var inputRequests = [
+    'SanJose 3',
+    'SanFrancisco 2',
+    'Fresno 2',
+    'Stockton 1',
+    'SanDiego 2',
+    'SanJose 4',
+    'SantaCruz 3'
+];
+
+//存放location的Map,key是map名字，value是一个list，list的元素是map<area,mapObj>
+var locationMap = new Map();
+
+//遍历location
+for(var j=0;j<inputLocations.length;j++){
+    var locationStr = inputLocations[j];
+    var locationStrSplitted = locationStr.split(' ');
+    var locationName = locationStrSplitted[0],
+        locationX = parseFloat(locationStrSplitted[1]),
+        locationY = parseFloat(locationStrSplitted[2]);
+
+    //针对每个location，遍历所有地图判断是否包含
+    var locationMapValueList = [];
+    for(var i=0;i<inputMaps.length;i++){
+        var mapStr = inputMaps[i];
+        var mapStrSplitted = mapStr.split(' ');
+        var mapName = mapStrSplitted[0];
+        //四个坐标
+        var x1 = parseFloat(mapStrSplitted[1]),
+            y1 = parseFloat(mapStrSplitted[2]),
+            x2 = parseFloat(mapStrSplitted[3]),
+            y2 = parseFloat(mapStrSplitted[4]);
+        var rightBottomX,rightBottomY,area,ratio,centerX,centerY,minX;
+        var locationXIn = false,
+            locationYIn = false;
+        if(x1<x2) {
+            rightBottomX = x2;
+            minX = x1;
+            if(locationX>=x1 && locationX<=x2){
+                locationXIn = true;
+            }
+
+        }else{
+            rightBottomX = x1;
+            minX = x2;
+            if(locationX>=x2 && locationX<=x1){
+                locationXIn = true;
+            }
+        }
+
+        if(y1<y2) {
+            rightBottomY = y1;
+            if(locationY>=y1 && locationY<=y2){
+                locationYIn = true;
+            }
+        }else{
+            rightBottomY = y2;
+            if(locationY>=y2 && locationY<=y1){
+                locationYIn = true;
+            }
+        }
+
+        area = Math.abs(x1-x2)*Math.abs(y1-y2);
+        ratio = (Math.abs(y1-y2) / Math.abs(x1-x2)).toFixed(2);
+        centerX = (x1+x2)/2;
+        centerY = (y1+y2)/2;
+        var mapObj = {
+            name: mapName,
+            rightBottomX:rightBottomX,
+            rightBottomY:rightBottomY,
+            area:area,
+            ratio:ratio,
+            centerX:centerX,
+            centerY:centerY,
+            minX:minX,
+            locationX:locationX,
+            locationY:locationY
+        };
+
+        //如果该地图包含该location
+        if(locationXIn && locationYIn){
+            //如果存在相同面积的地图则加上
+            var isInList = false;
+            for(var k=0;k<locationMapValueList.length;k++){
+                if(locationMapValueList[k].area == area){
+                    isInList = true;
+                    locationMapValueList[k].mapList.push(mapObj);
+                    break;
+                }
+            }
+            if(!isInList){
+                var obj = {
+                    area:area,
+                    mapList:[mapObj]
+                }
+                locationMapValueList.push(obj);
+            }
+        }
+    }
+    //添加到map中
+    locationMap.set(locationName,locationMapValueList);
+
+}
+//排序处理
+function sortMapObj(obj1,obj2){
+    var distanceToMapCenterObj1 = (obj1.locationX-obj1.centerX)*(obj1.locationX-obj1.centerX)+(obj1.locationY-obj1.centerY)*(obj1.locationY-obj1.centerY);
+    var distanceToMapCenterObj2 = (obj2.locationX-obj2.centerX)*(obj2.locationX-obj2.centerX)+(obj2.locationY-obj2.centerY)*(obj2.locationY-obj2.centerY);
+    //距离地图中心相等的情况
+    if(distanceToMapCenterObj1 == distanceToMapCenterObj2){
+        //地图比例
+        var obj1RatioDiff = Math.abs(obj1.ratio-0.75);
+        var obj2RatioDiff = Math.abs(obj2.ratio-0.75);
+        //地图比例相同的情况
+        if(obj1RatioDiff == obj2RatioDiff){
+            var obj1DistanceToLowerRight = (obj1.locationX-obj1.rightBottomX)*(obj1.locationX-obj1.rightBottomX)+(obj1.locationY-obj1.rightBottomY)*(obj1.locationY-obj1.rightBottomY)
+            var obj2DistanceToLowerRight = (obj2.locationX-obj2.rightBottomX)*(obj2.locationX-obj2.rightBottomX)+(obj2.locationY-obj2.rightBottomY)*(obj2.locationY-obj2.rightBottomY)
+            //距离右下角距离相同的情况
+            if(obj1DistanceToLowerRight == obj2DistanceToLowerRight){
+                return obj1.minX - obj2.minX;
+            }else{
+                return obj2DistanceToLowerRight - obj1DistanceToLowerRight;
+            }
+        }else{
+            return obj1RatioDiff - obj2RatioDiff;
+        }
+    }else{
+        return distanceToMapCenterObj1 - distanceToMapCenterObj2;
+    }
+}
+
+locationMap.forEach(function(v,k){
+    v.sort(function(a,b){return b.area-a.area;});
+    for(var i=0;i<v.length;i++){
+        v[i].mapList.sort(sortMapObj);
+    }
+});
+
+//处理询问
+for(var i=0;i<inputRequests.length;i++){
+    var r = inputRequests[i];
+    var reqName = r.split(' ')[0];
+    var reqLevel = parseInt(r.split(' ')[1],10);
+    if(locationMap.get(reqName) == undefined){
+        console.log(reqName + ' at detail level ' +reqLevel+ ' unknown location');
+    }else{
+        var list = locationMap.get(reqName);
+        if(list.length==0){
+            console.log(reqName+ ' at detail level ' + reqLevel + ' no map contains that location');
+        }else{
+            //too large
+            if(list.length < reqLevel){
+                console.log(reqName+ ' at detail level ' +reqLevel+ ' no map at that detail level; using ' + list[list.length-1].mapList[0].name);
+            }else{
+                console.log(reqName+' at detail level '+ reqLevel +' using '+list[reqLevel-1].mapList[0].name);
+            }
+        }
+
+    }
+
+}
