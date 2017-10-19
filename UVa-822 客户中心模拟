@@ -1,0 +1,158 @@
+//客户中心模拟，这道题太tm蛋疼了，考虑的细节地方太多
+
+var inputRequest = [
+    '128 20 0 5 10',
+    '134 25 5 6 7',
+    '153 30 10 4 5'
+];
+var inputStaff = [
+    '10 2 128 134',
+    '11 1 134',
+    '12 2 128 153',
+    '13 1 153'
+];
+
+//未处理的请求池,里面存放请求id
+var unhandledRequestsPool = [];
+//请求种类的list
+var requestsList = [];
+//解析请求输入
+var maxTime = 0;
+for(var i=0;i<inputRequest.length;i++){
+    var strSplitted = inputRequest[i].split(' ');
+    var obj = {
+        rid:strSplitted[0],
+        num:parseInt(strSplitted[1],10),
+        startTime:parseInt(strSplitted[2],10),
+        processTime:parseInt(strSplitted[3],10),
+        interval:parseInt(strSplitted[4],10)
+    }
+    if(obj.startTime + obj.interval*(obj.num-1) >= maxTime){
+        maxTime = obj.startTime + obj.interval*(obj.num-1);
+    }
+    requestsList.push(obj);
+}
+
+//员工池
+var staffPool = [];
+//解析员工输入
+for(var i=0;i<inputStaff.length;i++){
+    var strSplitted = inputStaff[i].split(' ');
+    var l = [];
+    for(var j=2;j<strSplitted.length;j++){
+       l.push(strSplitted[j]);
+    }
+    var staffObj = {
+        sid:parseInt(strSplitted[0]),
+        num:strSplitted[1],
+        lastStartTime:0,
+        //这个list存放员工优先级的任务
+        rlist:l,
+        //是否忙碌，初始状态空闲
+        isBusy:false,
+        //预计花费时间
+        timeToProcess:0,
+        //当前用时
+        timeSpent:0
+    }
+    staffPool.push(staffObj)
+}
+//排序函数
+function sortStaff(s1,s2){
+    if(s1.lastStartTime == s2.lastStartTime){
+        return s1.sid - s2.sid;
+    }
+    return s1.lastStartTime-s2.lastStartTime;
+}
+
+//流失的时间
+var timeElapsed = 0;
+while(1){
+
+    //每一分钟都进行判断：向池中添加到来的请求
+    for(var i=0;i<requestsList.length;i++){
+        var obj = requestsList[i];
+        var startTime = obj.startTime;
+        var interval = obj.interval;
+        //将到来的请求放入请求池
+        if(((timeElapsed-startTime) % interval == 0) && obj.num>0){
+            unhandledRequestsPool.push(obj.rid);
+            obj.num--;
+        }
+    }
+
+    //处理请求的过程,遍历所有员工，看他们是否有空
+    //员工选择的请求对象
+    var selectedReqAndStaffMap = new Map();
+    for(var j=0;j<staffPool.length;j++){
+        var obj1 = staffPool[j];
+        //每个员工时间处理
+        //处理请求完成
+        if(obj1.timeSpent == obj1.timeToProcess){
+            obj1.timeSpent = 0;
+            obj1.isBusy = false;
+        }
+        //如果有空
+        if(obj1.isBusy == false){
+            //查找可以处理的请求
+            for(var k=0;k<obj1.rlist.length;k++){
+                if(unhandledRequestsPool.indexOf(obj1.rlist[k])>-1){
+                    if(selectedReqAndStaffMap.has(obj1.rlist[k])){
+                        selectedReqAndStaffMap.get(obj1.rlist[k]).push(obj1);
+                    }
+                    else{
+                        selectedReqAndStaffMap.set(obj1.rlist[k],[obj1]);
+                    }
+                    break;
+                }
+            }
+        //忙碌
+        }else{
+            //用时增加
+            obj1.timeSpent++;
+        }
+    }
+
+    //进行请求分配
+    selectedReqAndStaffMap.forEach(function(v,k){
+        v.sort(sortStaff);
+        //从请求池中去除该请求
+        var index = unhandledRequestsPool.indexOf(k);
+        unhandledRequestsPool.splice(index,1);
+        //该员工开始执行请求
+        var reqProcessTime;
+        for(var i=0;i<requestsList.length;i++){
+            if(requestsList[i].rid == k){
+                reqProcessTime = requestsList[i].processTime;
+                break;
+            }
+        }
+        for(var i=0;i<staffPool.length;i++){
+            if(staffPool[i].sid == v[0].sid){
+                staffPool[i].lastStartTime = timeElapsed;
+                staffPool[i].isBusy = true;
+                staffPool[i].timeToProcess = reqProcessTime;
+                staffPool[i].timeSpent = 0;
+                break;
+            }
+        }
+
+    });
+
+    if(timeElapsed>=maxTime && unhandledRequestsPool.length == 0){
+        break;
+    }
+
+    timeElapsed++;
+}
+
+//继续计算未完成用时
+var additonalTime = 0;
+for(var i=0;i<staffPool.length;i++){
+    //必须处于忙碌状态才能计算，否则早已完成了任务
+    if(staffPool[i].timeToProcess - staffPool[i].timeSpent >= additonalTime && staffPool[i].isBusy){
+        additonalTime = staffPool[i].timeToProcess - staffPool[i].timeSpent;
+    }
+}
+
+console.log('总耗时: '+(timeElapsed+additonalTime));
