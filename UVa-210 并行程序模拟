@@ -1,0 +1,164 @@
+//蛋疼的模拟题，主要考察双端队列
+var programmeNum = 3,
+  varTime = 1,
+  outputTime = 1,
+  lockTime = 1,
+  unlockTime = 1,
+  endTime = 1,
+  quantumTime = 1;
+
+var waitintQueue = [],
+  blockedQueue = [];
+
+var input = [
+  'a = 4',
+  'print a',
+  'lock',
+  'b = 9',
+  'print b',
+  'unlock',
+  'print b',
+  'end',
+  'a = 3',
+  'print a',
+  'lock',
+  'b = 8',
+  'print b',
+  'unlock',
+  'print b',
+  'end',
+  'b = 5',
+  'a = 17',
+  'print a',
+  'print b',
+  'lock',
+  'b = 21',
+  'print b',
+  'unlock',
+  'print b',
+  'end'
+];
+//存储变量的map
+var map = new Map();
+
+
+var programmeIdCnt = 1;
+//每个程序是一个对象{id:[state1,state2...]}
+//首先解析输入，生成等待队列
+var programmeObj = [];
+for(var i=0;i<input.length;i++){
+  var temp = input[i];
+  if(temp=='end'){
+      programmeObj.push(temp);
+      var obj = {};
+      obj[programmeIdCnt] = programmeObj;
+      waitintQueue.push(obj);
+      programmeObj = [];
+      programmeIdCnt++;
+  }else {
+      programmeObj.push(temp);
+  }
+}
+
+//根据语句类型获取执行时间
+function getExcuteTime(state){
+  if(state.indexOf('=')!=-1){
+      return varTime;
+  }else if(state.indexOf('print')!=-1){
+      return outputTime;
+  }else if(state=='lock'){
+      return lockTime;
+  }else if(state=='unlock'){
+      return unlockTime;
+  }else{
+      return endTime;
+  }
+}
+
+//是否有程序在lock状态
+var isProgrammeInLock = false;
+
+//主程序：开始运行
+while(waitintQueue.length>0){
+  //退出循环
+  if(waitintQueue.length==0 && blockedQueue.length==0){
+      break;
+  }
+  //获取等待队列首部的程序
+  var firstProgramme = waitintQueue.shift();
+  var pid;
+  for(var k in firstProgramme){
+      pid = k;
+  }
+  //开始一次运行程序
+  var timeLeft = quantumTime;
+  while(timeLeft>0){
+      //获取该程序第一条语句
+      var currentState = firstProgramme[pid][0];
+      var runningTime = getExcuteTime(currentState);
+      //具体执行语句
+      //输出语句
+      if(currentState.indexOf('print')!=-1){
+          //提取等号后的值
+          var variable = currentState.split(' ')[1];
+          //如果没有赋值的话
+          if(!map.has(variable)){
+              console.log(pid+": 0");
+          }else{
+              var v = map.get(variable);
+              console.log(pid+": "+v);
+          }
+      }else if(currentState.indexOf('=')!=-1){
+          var variableName = currentState.split(' ')[0];
+          var variableValue = currentState.split(' ')[2];
+          //保存
+          map.set(variableName,variableValue);
+      }else if(currentState == 'lock'){
+          //如果此时其他程序已经在lock状态了
+          if(isProgrammeInLock){
+              //将该程序放到阻止队列的尾部
+              blockedQueue.push(firstProgramme);
+              break;
+          }else {
+              isProgrammeInLock = true;
+          }
+      }else if(currentState == 'unlock'){
+          if(blockedQueue.length>0) {
+              isProgrammeInLock = false;
+              var p = blockedQueue.shift();
+              waitintQueue.unshift(p);
+          }
+      }else if(currentState == 'end'){
+          //将此程序移出等待队列
+          var isEnd = false;
+          for(var i=0;i<waitintQueue.length;i++){
+              var programmeID;
+              for(var key in waitintQueue[i]){
+                  programmeID = key;
+              }
+              if(programmeID == pid){
+                  waitintQueue.splice(i,1);
+                  isEnd = true;
+                  break;
+              }
+          }
+          if(isEnd){
+              break;
+          }
+
+      }
+
+      //执行完成，该程序移除第一条语句
+      firstProgramme[pid].shift();
+      //减少时间
+      timeLeft -= runningTime;
+      if(timeLeft<=0){
+          //将该程序放到等待队列尾部
+          if(firstProgramme[pid].length>0) {
+              waitintQueue.push(firstProgramme);
+          }
+          break;
+      }
+  }
+}
+
