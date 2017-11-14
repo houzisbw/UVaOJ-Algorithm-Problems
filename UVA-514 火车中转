@@ -1,0 +1,32 @@
+//栈的应用
+var input = [1,2,3,4,5];
+var output = [4,5,3,2,1];
+//中转的栈
+var transferStack = [];
+transferStack.push(input.shift());
+var isValid = true;
+while(transferStack.length>0){
+    //取出栈顶元素
+    var topElement = transferStack[transferStack.length-1];
+    //比较如果与输出队列第一个相等
+    if(topElement == output[0]){
+        //出栈
+        output.shift();
+        transferStack.pop();
+    }else{
+        //输入队列为空，则不合法
+        if(input.length==0){
+            isValid = false;
+            break;
+        }else{
+            //入栈
+            transferStack.push(input.shift());
+        }
+    }
+}
+
+if(isValid){
+    alert('合法');
+}else{
+    alert('不合法');
+}
