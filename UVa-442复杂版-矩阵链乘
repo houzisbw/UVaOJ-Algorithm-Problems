@@ -1,0 +1,62 @@
+//矩阵链式乘法,注意，矩阵可能有多连续乘法，如A(BCDE)(C(DF)),原题最多只包含(AB)2个矩阵相乘
+var inputExpr = '(A(BC))';
+var inputMatrix = [
+    'A 50 10',
+    'B 10 20',
+    'C 20 5'
+];
+var matrixMap = new Map();
+for(var i=0;i<inputMatrix.length;i++){
+    var obj = {};
+    var splitted = inputMatrix[i].split(' ');
+    obj['row'] = parseInt(splitted[1],10);
+    obj['col'] = parseInt(splitted[2],10);
+    matrixMap.set(splitted[0],obj);
+}
+
+var stack = [];
+var multipleTimes = 0;
+var canMultiple = true;
+
+//第一步，依次读取表达式
+for(var i=0;i<inputExpr.length;i++){
+    var t = inputExpr[i];
+    if(t!=')') {
+        stack.push(t);
+    }else{
+        //依次pop,直到遇到左括号
+        var popList = [];
+        var topEle = stack.pop();
+        while(topEle!='('){
+            //头部插入，不是尾部
+            popList.unshift(topEle);
+            topEle = stack.pop();
+        }
+        //计算popList
+        var tempSum = 0;
+        var firstELe = popList.shift();
+        while(popList.length>0){
+            var second = popList.shift();
+            //如果合法
+            if(matrixMap.get(firstELe).col == matrixMap.get(second).row){
+                tempSum += matrixMap.get(firstELe).row * matrixMap.get(second).col * matrixMap.get(second).row;
+            }else{
+                canMultiple = false;
+                break;
+            }
+        }
+        //入栈
+        var obj = {};
+        obj['row'] = matrixMap.get(firstELe).row;
+        obj['col'] = matrixMap.get(second).col;
+        matrixMap.set(firstELe+'_'+second,obj);
+        stack.push(firstELe+'_'+second);
+        multipleTimes += tempSum;
+    }
+}
+
+if(canMultiple) {
+    console.log(multipleTimes);
+}else{
+    console.log('Invalid');
+}
