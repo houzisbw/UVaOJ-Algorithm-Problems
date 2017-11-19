@@ -1,0 +1,36 @@
+//悲剧文本,[代表光标移动到字符串头部开始输入，]代表光标移动到字符串尾部进行输入
+//目标：根据输入求出屏幕上显示的文本
+var input = 'a[bcde]';
+function getScreenWord(str){
+    var dir = -1;
+    var tempStr = '';
+    var output = '';
+    for(var i=0;i<str.length;i++){
+        var t = str[i];
+        if(t == '['){
+            if(dir==-1){
+                output = tempStr+output;
+            }else{
+                output += tempStr;
+            }
+            tempStr='';
+            dir = -1;
+        }
+        else if(t == ']'){
+            if(dir==-1){
+                output = tempStr+output;
+            }else{
+                output += tempStr;
+            }
+            dir = 1;
+            tempStr='';
+        }else{
+            tempStr+=t;
+        }
+    }
+    output+=tempStr;
+    console.log(output)
+}
+
+//输出
+getScreenWord(input)
