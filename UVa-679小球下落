@@ -1,0 +1,48 @@
+//模拟二叉树
+//小球下落
+var inputDepth = 16,
+    inputBallNum = 12345;
+var tree = [];
+//获取总结点数
+function getTotalNodeCount(depth){
+    var re = 1,cnt=1;
+    while(cnt<=depth){
+        re = re*2;
+        cnt++;
+    }
+    return re-1;
+}
+//0代表开关状态为关,1代表开
+for(var i=0;i<10000000;i++){
+    tree[i]=0;
+}
+var i=1;
+var lastPos;
+while(i<=inputBallNum){
+    var currentNodeIndex = 1;
+    var total = getTotalNodeCount(inputDepth);
+    while(1){
+        if(tree[currentNodeIndex]==0){
+            tree[currentNodeIndex] = 1;
+            if(currentNodeIndex*2<=total) {
+                currentNodeIndex *= 2;
+                lastPos = currentNodeIndex;
+            }else{
+                break;
+            }
+        }else{
+            tree[currentNodeIndex] = 0;
+            if(currentNodeIndex*2+1<=total) {
+                currentNodeIndex = currentNodeIndex*2+1;
+                lastPos = currentNodeIndex;
+            }else{
+                break;
+            }
+        }
+
+    }
+    i++;
+}
+
+alert(lastPos)
+
