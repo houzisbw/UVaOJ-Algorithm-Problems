@@ -1,0 +1,74 @@
+//思路：不用构造二叉树，直接根据路径长度来计算先后
+//输入是(value,path)的形式
+var input = '(11,LL) (7,LLL) (8,R) (5,) (4,L) (13,RL) (2,LLR) (1,RRR) (4,RR) ()';
+//解析输入
+var nodeList = input.split(' ');
+//key为路径，value为节点值
+var nodeMap = new Map();
+var isValid = true;
+var nodeKeyList = [];
+var outputList = [];
+for(var i=0;i<nodeList.length;i++){
+    var t = nodeList[i];
+    if(t.length>2){
+        var inner = t.substring(1,t.length-1);
+        var splitted = inner.split(',');
+        var key = splitted[1];
+        //根节点特殊处理
+        if(key==''){
+            key='A';
+        }
+        var value = splitted[0];
+        if(nodeMap.has(key)){
+            isValid=false;
+        }else{
+            nodeMap.set(key,value);
+            nodeKeyList.push(key);
+        }
+    }
+}
+//按长度排序后，相同长度的再按ascii码排序,即l排在r前面
+function sortByLength(a,b){
+    return a.length > b.length;
+}
+nodeKeyList.sort(sortByLength);
+
+var index=0;
+var len;
+while(index<=nodeKeyList.length-1){
+    len = nodeKeyList[index].length;
+    var i = index;
+    //由相同长度组成的节点list,代表在同一层上的节点
+    var tempList = [];
+    while(i<nodeKeyList.length && nodeKeyList[i].length == len){
+        //判断是否存在父节点
+        var parentNode = nodeKeyList[i].substring(0,nodeKeyList[i].length-1);
+        if(parentNode == ''){
+            parentNode='A';
+        }
+        if(!nodeMap.has(parentNode)){
+            isValid=false;
+        }
+        tempList.push(nodeKeyList[i]);
+        i++;
+    }
+    tempList.sort();
+    for(var j=0;j<tempList.length;j++){
+        outputList.push(tempList[j]);
+    }
+    //进行下一次判断
+    index=i;
+}
+
+//输出
+if(isValid){
+    var ret = '';
+    for(var i=0;i<outputList.length;i++){
+        var nodeValue = nodeMap.get(outputList[i]);
+        ret += nodeValue+' ';
+    }
+    alert(ret);
+
+}else{
+    alert(-1);
+}
