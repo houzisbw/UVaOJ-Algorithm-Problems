@@ -1,0 +1,62 @@
+//二叉树最长路径
+//节点结构
+function TreeNode(v){
+    this.left = null;
+    this.right = null;
+    this.value = v;
+}
+//构建二叉树
+var root = new TreeNode(3);
+var l = new TreeNode(8);
+var r = new TreeNode(7);
+var ll = new TreeNode(2);
+var lr = new TreeNode(10);
+var rl = new TreeNode(5);
+var rr = new TreeNode(100);
+
+root.left = l;
+root.right = r;
+l.left = ll;
+l.right = lr;
+r.left = rl;
+r.right = rr;
+
+//最长路径和
+var longestSum = 0;
+//最长路径的数组
+var longestSumList = [];
+function getLongestPath(node,sum,pathList){
+    pathList.push(node.value);
+    sum+=node.value;
+    if(node.left == null && node.right == null){
+        if(sum>=longestSum){
+            longestSum = sum;
+            //清空最长数组
+            longestSumList = [];
+            for(var i=0;i<pathList.length;i++){
+                longestSumList.push(pathList[i]);
+            }
+        }
+        //返回
+        return;
+    }
+    //如果不为null才能继续访问
+    if(node.left) {
+        getLongestPath(node.left, sum, pathList);
+        //返回的时候要退栈,重要
+        pathList.pop()
+    }
+    if(node.right) {
+        getLongestPath(node.right,sum,pathList);
+        pathList.pop()
+    }
+}
+
+//维持一份当前节点路径数组
+var path =[];
+//计算
+getLongestPath(root,0,path);
+//打印最长路径值
+console.log(longestSum);
+//打印最长路径节点
+console.log(longestSumList);
