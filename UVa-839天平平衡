@@ -1,0 +1,28 @@
+//判断天平是否平衡
+var input = [
+    [0,2,0,4],
+    [0,3,0,1],
+    [1,1,1,1],
+    [2,4,4,2],
+    [1,6,3,1]
+];
+
+var flag = true;
+var index = 0;
+//递归求解,当前节点的重量等于左右子节点重量之和
+function getTreeWeight(){
+    //输入完成
+    if(index>input.length-1) return;
+    var wl = input[index][0],
+        dl = input[index][1],
+        wr = input[index][2],
+        dr = input[index][3];
+    index++;
+    if(!wl) wl = getTreeWeight();
+    if(!wr) wr = getTreeWeight();
+    if(wl*dl !== wr*dr) flag=false;
+    return wl+wr;
+}
+
+getTreeWeight()
+alert(flag)
